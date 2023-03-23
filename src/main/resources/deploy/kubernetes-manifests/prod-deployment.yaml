@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloud-back
+  namespace: prod
+  labels:
+    app.kubernetes.io/name: cloud
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: cloud
+spec:
+  selector:
+    matchLabels:
+      app: cloud
+      tier: backend
+      environment: prod
+  template:
+    metadata:
+      labels:
+        app: cloud
+        tier: backend
+        environment: prod
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: cloud-backend
+          image: sngy-registry.kr.ncr.ntruss.com/cloud-image:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "800m"

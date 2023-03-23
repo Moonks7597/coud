@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sngy-iums-back
+  namespace: dev
+  labels:
+    app.kubernetes.io/name: iums
+    app.kubernetes.io/component: backend
+    app.kubernetes.io/part-of: iums
+spec:
+  selector:
+    matchLabels:
+      app: iums
+      tier: backend
+      environment: dev
+  template:
+    metadata:
+      labels:
+        app: iums
+        tier: backend
+        environment: dev
+    spec:
+      containers:
+        - name: sngy-iums-backend
+          image: gcr.io/synergy-249605/iums-backend-beta:latest
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "200m"
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+          env:
+            - name: SRPING_PROFILES_ACTIVE
+              value: dev
+            - name: POSTGRES_HOST
+              value: 34.64.220.53
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DATABASE
+              value: iums-test
+            - name: POSTGRES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: iums-dev-secret
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iums-dev-secret
+                  key: password
+            - name: REDIS_HOST
+              value: redis-dev.redis-dev.svc.cluster.local
+            - name: REDIS_PORT
+              value: "26379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iums-dev-secret
+                  key: redisPassword
+            - name: REDIS_DATABASE
+              value: "1"
+            - name: REDIS_DATABASE_SUB
+              value: "15"
+            - name: REDIS_MASTER
+              value: "mymaster"
+            - name: SLACK_NOTIFICATION
+              value: "false"
+            - name: INFLUX_HOST
+              value: 34.64.88.155
+            - name: INFLUX_PORT
+              value: '8086'
+            - name: INFLUX_DATABASE
+              value: synergy
+            - name: INFLUX_USERNAME
+              value: influx
+            - name: KAFKA_BROKERS
+              value: kafka-0.kafka-headless.kafka-dev.svc.cluster.local:9092,kafka-1.kafka-headless.kafka-dev.svc.cluster.local:9092,kafka-2.kafka-headless.kafka-dev.svc.cluster.local:9092
